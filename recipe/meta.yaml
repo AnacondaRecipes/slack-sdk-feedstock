@@ -1,5 +1,5 @@
 {% set name = "slack-sdk" %}
-{% set version = "3.18.1" %}
+{% set version = "3.19.5" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/slack_sdk-{{ version }}.tar.gz
-  sha256: a25d3d2bf0bf605d54d764d4a463fe7c0659ee24c13d75653e2bec247bd5998b
+  sha256: 47fb4af596243fe6585a92f3034de21eb2104a55cc9fd59a92ef3af17cf9ddd8
 
 build:
   number: 0
@@ -15,14 +15,16 @@ build:
 outputs:
   - name: slack-sdk
     build:
-      noarch: python
+      skip: True  # [py<36]
       script: python -m pip install . -vv
     requirements:
       host:
         - pip
-        - python >=3.6
+        - python
+        - setuptools
+        - wheel
       run:
-        - python >=3.6
+        - python
     test:
       imports:
         - slack_sdk
@@ -37,12 +39,13 @@ outputs:
         # The old RTM API has a dependency on aiohttp
         # - slack_sdk.rtm
         - slack_sdk.rtm_v2
-      commands:
-        - pip check
-        - conda install -y aiohttp
-        - python -c "import slack_sdk.rtm"
       requires:
         - pip
+        - aiohttp >=3.7.3,<4
+      commands:
+        - pip check
+        - python -c "import slack_sdk.rtm"
+
   - name: slack_sdk
     build:
       noarch: python
@@ -56,10 +59,18 @@ outputs:
 about:
   home: https://github.com/slackapi/python-slack-sdk
   summary: The Slack API Platform SDK for Python
+  description: |
+    The Slack platform offers several APIs to build apps. 
+    Each Slack API delivers part of the capabilities from the platform, 
+    so that you can pick just those that fit for your needs. 
+    This SDK offers a corresponding package for each of Slack's APIs. 
+    They are small and powerful when used independently, and work seamlessly 
+    when used together, too.
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   dev_url: https://github.com/slackapi/python-slack-sdk
-  doc_url: https://github.com/slackapi/python-slack-sdk
+  doc_url: https://slack.dev/python-slack-sdk/
 
 extra:
   recipe-maintainers:
