@@ -16,7 +16,7 @@ outputs:
   - name: slack-sdk
     build:
       skip: True  # [py<36]
-      script: python -m pip install . -vv
+      script: python -m pip install . -vv --no-deps
     requirements:
       host:
         - pip
@@ -50,7 +50,13 @@ outputs:
     build:
       noarch: python
     requirements:
+      host:
+        - pip
+        - python
+        - setuptools
+        - wheel
       run:
+        - python
         - {{ pin_subpackage(name, exact=True) }}
     test:
       imports:
