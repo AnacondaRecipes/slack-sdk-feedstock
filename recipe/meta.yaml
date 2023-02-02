@@ -36,15 +36,14 @@ outputs:
         - slack_sdk.scim
         - slack_sdk.oauth
         - slack_sdk.models
-        # The old RTM API has a dependency on aiohttp
-        # - slack_sdk.rtm
+        - slack_sdk.rtm
         - slack_sdk.rtm_v2
       requires:
         - pip
+        # The old RTM API (slack_sdk.rtm) has a dependency on aiohttp
         - aiohttp >=3.7.3,<4
       commands:
         - pip check
-        - python -c "import slack_sdk.rtm"
 
   - name: slack_sdk
     build:
@@ -63,7 +62,7 @@ outputs:
         - slack_sdk
 
 about:
-  home: https://github.com/slackapi/python-slack-sdk
+  home: https://slack.dev/
   summary: The Slack API Platform SDK for Python
   description: |
     The Slack platform offers several APIs to build apps. 
