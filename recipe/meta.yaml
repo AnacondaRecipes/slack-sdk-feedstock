@@ -56,12 +56,19 @@ outputs:
     requirements:
       host:
         - python
+        - setuptools
+        - wheel
       run:
         - python
         - {{ pin_subpackage(name, min_pin='x.x.x', max_pin='x.x.x') }}
     test:
       imports:
         - slack_sdk
+      requires:
+        - pip
+      commands:
+        - pip check
+        - python -c "from importlib.metadata import version; assert(version('{{ name|replace('_', '-') }}')=='{{ version }}')"        
 
 about:
   home: https://slack.dev
