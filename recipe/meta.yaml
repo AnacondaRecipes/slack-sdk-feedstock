@@ -1,4 +1,4 @@
-{% set name = "slack_sdk" %}
+{% set name = "slack-sdk" %}
 {% set version = "3.36.0" %}
 
 package:
@@ -6,7 +6,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_') }}-{{ version }}.tar.gz
   sha256: 8586022bdbdf9f8f8d32f394540436c53b1e7c8da9d21e1eab4560ba70cfcffa
 
 build:
@@ -14,7 +14,7 @@ build:
   skip: True  # [py<36]
 
 outputs:
-  - name: {{ name }}
+  - name: slack-sdk
     script: build_base.bat  # [win]
     script: build_base.sh  # [not win]
     requirements:
@@ -52,7 +52,7 @@ outputs:
         {% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
         - pytest -v {{ ignore_tests }} tests
 
-  - name: slack-sdk
+  - name: slack_sdk
     requirements:
       host:
         - python
@@ -68,7 +68,7 @@ outputs:
         - pip
       commands:
         - pip check
-        - python -c "from importlib.metadata import version; assert(version('{{ name|replace('_', '-') }}')=='{{ version }}')"        
+        - python -c "from importlib.metadata import version; assert(version('{{ name.replace('-', '_') }}')=='{{ version }}')"
 
 about:
   home: https://slack.dev
