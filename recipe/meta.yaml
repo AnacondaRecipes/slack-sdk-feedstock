@@ -11,61 +11,45 @@ source:
 
 build:
   number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   skip: True  # [py<36]
 
-outputs:
-  - name: slack-sdk
-    script: build_base.bat  # [win]
-    script: build_base.sh   # [not win]
-    requirements:
-      host:
-        - pip
-        - python
-        - setuptools
-        - wheel
-      run:
-        - python
-    test:
-      source_files:
-        - tests
-      imports:
-        - slack_sdk
-        - slack_sdk.web
-        - slack_sdk.webhook
-        - slack_sdk.signature
-        - slack_sdk.socket_mode
-        - slack_sdk.audit_logs
-        - slack_sdk.scim
-        - slack_sdk.oauth
-        - slack_sdk.models
-        - slack_sdk.rtm
-        - slack_sdk.rtm_v2
-      requires:
-        - pip
-        - pytest
-        # The old RTM API (slack_sdk.rtm) has a dependency on aiohttp
-        - aiohttp >=3.7.3,<4
-      commands:
-        - pip check
-        - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-        - pytest tests
+requirements:
+  host:
+    - pip
+    - python
+    - setuptools
+    - wheel
+  run:
+    - python
+    # The old RTM API (slack_sdk.rtm) has a dependency on aiohttp
+    - aiohttp >=3.7.3,<4
 
-  - name: slack_sdk
-    requirements:
-      host:
-        - pip
-        - python
-        - setuptools
-        - wheel
-      run:
-        - python
-        - {{ pin_subpackage(name, exact=True) }}
-    test:
-      imports:
-        - slack_sdk
-      commands:
-        - pip check
-        - python -c "from importlib.metadata import version; assert(version('{{ name|replace('-', '_') }}')=='{{ version }}')"
+# ModuleNotFoundError: No module named 'tests'
+{% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
+
+test:
+    source_files:
+      - tests
+    imports:
+      - slack_sdk
+      - slack_sdk.web
+      - slack_sdk.webhook
+      - slack_sdk.signature
+      - slack_sdk.socket_mode
+      - slack_sdk.audit_logs
+      - slack_sdk.scim
+      - slack_sdk.oauth
+      - slack_sdk.models
+      - slack_sdk.rtm
+      - slack_sdk.rtm_v2
+    requires:
+      - pip
+      - pytest >=7.0.1,<9
+    commands:
+      - pip check
+      - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+      - pytest -v {{ ignore_tests }} tests
 
 about:
   home: https://slack.dev
