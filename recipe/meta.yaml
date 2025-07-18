@@ -55,6 +55,7 @@ outputs:
   - name: slack_sdk
     requirements:
       host:
+        - pip
         - python
         - setuptools
         - wheel
