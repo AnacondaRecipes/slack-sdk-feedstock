@@ -1,22 +1,22 @@
 {% set name = "slack-sdk" %}
-{% set version = "3.19.5" %}
+{% set version = "3.36.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name|lower }}-split
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/slack_sdk-{{ version }}.tar.gz
-  sha256: 47fb4af596243fe6585a92f3034de21eb2104a55cc9fd59a92ef3af17cf9ddd8
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_') }}-{{ version }}.tar.gz
+  sha256: 8586022bdbdf9f8f8d32f394540436c53b1e7c8da9d21e1eab4560ba70cfcffa
 
 build:
   number: 0
+  skip: True  # [py<36]
 
 outputs:
   - name: slack-sdk
-    build:
-      skip: True  # [py<36]
-      script: python -m pip install . -vv --no-deps
+    script: build_base.bat  # [win]
+    script: build_base.sh  # [not win]
     requirements:
       host:
         - pip
@@ -25,7 +25,18 @@ outputs:
         - wheel
       run:
         - python
+      run_constrained:
+        # https://github.com/slackapi/python-slack-sdk/blob/v3.36.0/requirements/optional.txt
+        # https://github.com/slackapi/python-slack-sdk/blob/v3.36.0/slack_sdk/aiohttp_version_checker.py#L21
+        - aiohttp >=3.7.3,<4
+        - aiodns >1.0
+        - boto3 <=2
+        - sqlalchemy >=1.4,<3
+        - websockets >=9.1,<16
+        - websocket-client >=1,<2
     test:
+      source_files:
+        - tests
       imports:
         - slack_sdk
         - slack_sdk.web
@@ -40,14 +51,16 @@ outputs:
         - slack_sdk.rtm_v2
       requires:
         - pip
-        # The old RTM API (slack_sdk.rtm) has a dependency on aiohttp
+        - pytest >=7.0.1,<9
         - aiohttp >=3.7.3,<4
       commands:
         - pip check
+        - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+        # ModuleNotFoundError: No module named 'tests'
+        {% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
+        - pytest -v {{ ignore_tests }} tests
 
   - name: slack_sdk
-    build:
-      noarch: python
     requirements:
       host:
         - pip
@@ -56,13 +69,18 @@ outputs:
         - wheel
       run:
         - python
-        - {{ pin_subpackage(name, exact=True) }}
+        - {{ pin_subpackage(name, min_pin='x.x.x', max_pin='x.x.x') }}
     test:
       imports:
         - slack_sdk
+      requires:
+        - pip
+      commands:
+        - pip check
+        - python -c "from importlib.metadata import version; assert(version('{{ name.replace('-', '_') }}')=='{{ version }}')"
 
 about:
-  home: https://slack.dev/
+  home: https://slack.dev
   summary: The Slack API Platform SDK for Python
   description: |
     The Slack platform offers several APIs to build apps. 
@@ -75,7 +93,7 @@ about:
   license_family: MIT
   license_file: LICENSE
   dev_url: https://github.com/slackapi/python-slack-sdk
-  doc_url: https://slack.dev/python-slack-sdk/
+  doc_url: https://slack.dev/python-slack-sdk
 
 extra:
   recipe-maintainers:
