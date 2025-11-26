@@ -61,7 +61,7 @@ outputs:
         - pytest -v {{ ignore_tests }} tests
         # test_rtm_client_never_generate_huge_number_of_event_loops is not supported in Python 3.14+:
         # RuntimeError: There is no current event loop in thread 'MainThread'.
-        - pytest tests {{ ignore_tests }} -v  # [py < 314]
+        - pytest tests {{ ignore_tests }} -v  # [py<314]
         - pytest tests {{ ignore_tests }} -v -k "not test_rtm_client_never_generate_huge_number_of_event_loops"  # [py>=314]
 
   - name: slack_sdk
