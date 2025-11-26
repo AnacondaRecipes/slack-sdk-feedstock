@@ -59,6 +59,10 @@ outputs:
         # ModuleNotFoundError: No module named 'tests'
         {% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
         - pytest -v {{ ignore_tests }} tests
+        # test_rtm_client_never_generate_huge_number_of_event_loops is not supported in Python 3.14+:
+        # RuntimeError: There is no current event loop in thread 'MainThread'.
+        - pytest --pyargs slack_sdk {{ ignore_tests }} -v  # [py < 314]
+        - pytest --pyargs slack_sdk {{ ignore_tests }} -v -k "not test_rtm_client_never_generate_huge_number_of_event_loops"  # [py>=314]
 
   - name: slack_sdk
     requirements:
