@@ -1,5 +1,6 @@
 {% set name = "slack-sdk" %}
-{% set version = "3.43.0" %}
+{% set version = "3.45.0" %}
+{% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
 
 package:
   name: {{ name }}-split
@@ -7,7 +8,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_') }}-{{ version }}.tar.gz
-  sha256: 0553152e46c4259eb69f7464cdadc35ba4802ca10f9f5a849c92cf03d6c2ba07
+  sha256: 1ab794452f238b59db0d8a4d346263d65190288add53ec67a05751d8e7402486
 
 build:
   number: 0
@@ -55,12 +56,10 @@ outputs:
         - pip check
         - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
         # ModuleNotFoundError: No module named 'tests'
-        {% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
         # test_rtm_client_never_generate_huge_number_of_event_loops is not supported in Python 3.14+:
         # RuntimeError: There is no current event loop in thread 'MainThread'.
         - pytest tests {{ ignore_tests }} -v  # [py<314]
         - pytest tests {{ ignore_tests }} -v -k "not test_rtm_client_never_generate_huge_number_of_event_loops"  # [py>=314]
-
   - name: slack_sdk
     requirements:
       host:
@@ -83,11 +82,11 @@ about:
   home: https://slack.dev
   summary: The Slack API Platform SDK for Python
   description: |
-    The Slack platform offers several APIs to build apps. 
-    Each Slack API delivers part of the capabilities from the platform, 
-    so that you can pick just those that fit for your needs. 
-    This SDK offers a corresponding package for each of Slack's APIs. 
-    They are small and powerful when used independently, and work seamlessly 
+    The Slack platform offers several APIs to build apps.
+    Each Slack API delivers part of the capabilities from the platform,
+    so that you can pick just those that fit for your needs.
+    This SDK offers a corresponding package for each of Slack's APIs.
+    They are small and powerful when used independently, and work seamlessly
     when used together, too.
   license: MIT
   license_family: MIT
