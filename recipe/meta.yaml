@@ -1,6 +1,5 @@
 {% set name = "slack-sdk" %}
 {% set version = "3.45.0" %}
-{% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
 
 package:
   name: {{ name }}-split
@@ -32,6 +31,8 @@ outputs:
         - sqlalchemy >=2.0.49,<3
         - websockets >=9.1,<16
         - websocket-client >=1,<2
+    # ModuleNotFoundError: No module named 'tests'
+    {% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
     test:
       source_files:
         - tests
@@ -55,7 +56,6 @@ outputs:
       commands:
         - pip check
         - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-        # ModuleNotFoundError: No module named 'tests'
         # test_rtm_client_never_generate_huge_number_of_event_loops is not supported in Python 3.14+:
         # RuntimeError: There is no current event loop in thread 'MainThread'.
         - pytest tests {{ ignore_tests }} -v  # [py<314]
