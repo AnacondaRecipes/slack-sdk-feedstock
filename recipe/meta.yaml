@@ -25,12 +25,12 @@ outputs:
       run:
         - python
       run_constrained:
-        - aiodns >1.0
-        - aiohttp >=3.13.5,<4
+        - aiodns >=4.0.4
+        - aiohttp >=3.14.3,<4
         - boto3 <=2
-        - sqlalchemy >=2.0.49,<3
-        - websockets >=9.1,<16
-        - websocket-client >=1,<2
+        - sqlalchemy >=2.0.52,<3
+        - websockets >=16.1.1,<17
+        - websocket-client >=1.9.1,<2
     # ModuleNotFoundError: No module named 'tests'
     {% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
     test:
