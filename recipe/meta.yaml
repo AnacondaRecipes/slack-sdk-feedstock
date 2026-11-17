@@ -1,5 +1,6 @@
 {% set name = "slack-sdk" %}
-{% set version = "3.45.0" %}
+{% set version = "3.47.0" %}
+{% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
 
 package:
   name: {{ name }}-split
@@ -7,7 +8,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_') }}-{{ version }}.tar.gz
-  sha256: 1ab794452f238b59db0d8a4d346263d65190288add53ec67a05751d8e7402486
+  sha256: 824e91a94a5b72a65531e8db0dd63dc4dc6bbad1a219b19582b48d5661c1c707
 
 build:
   number: 0
@@ -32,7 +33,6 @@ outputs:
         - websockets >=16.1.1,<17
         - websocket-client >=1.9.1,<2
     # ModuleNotFoundError: No module named 'tests'
-    {% set ignore_tests = " --ignore=tests/test_proxy_env_variable_loader.py" %}
     test:
       source_files:
         - tests
